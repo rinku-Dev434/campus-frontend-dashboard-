@@ -117,9 +117,10 @@ export function QuestionForm() {
 
     axios({
       method: "post",
-      url: "http://127.0.0.1:9000/questionsets",
+      url: "https://campus-dashboard.onrender.com/questionform",
       data: fullExamData,
     });
+     alert ("exam data created successfully")
     navigate("/home");
 
     alert(JSON.stringify(fullExamData, null, 2));
