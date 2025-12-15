@@ -15,12 +15,13 @@ export function CampusIndex() {
       <Routes>
         <Route path="/" element={<Login/>} ></Route>
         <Route path="/home" element={<Home/>} ></Route>
+         <Route path="/exampage/:testId" element={<Exampage />} />
         <Route path="/login" element={<Login/>} ></Route>
         <Route path="/register" element={<Register/>} ></Route>
         <Route path="/participants" element={<Participants/>} ></Route>
         <Route path="/questionform" element={<QuestionForm/>} ></Route>
         <Route path="/contact" element={<h2>Contact</h2>} ></Route>
-        <Route path="/exampage" element={<Exampage/>} ></Route>
+        {/* <Route path="/exampage" element={<Exampage/>} ></Route> */}
         <Route path="/error" element={<ErrorPage/>}
         />
         <Route path="/*" element={<h2 className="text-danger text-center">404 Page Not Found</h2>} ></Route>
