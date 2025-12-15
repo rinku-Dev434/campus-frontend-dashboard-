@@ -8,19 +8,30 @@ export function Participants() {
   const [cookies,setCookies,removeCookies] = useCookies();
   const navigate = useNavigate();
   
-  function LoadData(){
-      fetch("https://campus-dashboard.onrender.com/users")
-      .then((response)=>response.json())
-      .then((data)=>{
-        setData(data);
-      })
-    }
+ function LoadData() {
+  fetch("https://campus-dashboard.onrender.com/users")
+    .then(response => response.json())
+    .then(data => {
+      const sortedData = data.sort((a, b) => {
+        return (b.points || 0) - (a.points || 0);
+      });
+
+      setData(sortedData);
+      console.log(sortedData);
+    })
+    .catch(err => console.log(err));
+}
+
     useEffect(()=>{
       if (!cookies.username) {
       navigate("/login");
     }
-      LoadData(); // 
+    
+    LoadData();
+    
     },[]);
+
+    
   
 
   return (
