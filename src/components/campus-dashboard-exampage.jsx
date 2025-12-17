@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export function Exampage() {
   const { testId } = useParams();
-  const [cookies] = useCookies();
   const navigate = useNavigate();
+  const [cookies] = useCookies(["username"]);
 
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
@@ -13,8 +13,10 @@ export function Exampage() {
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-    if (!cookies.username) navigate("/login");
-  }, []);
+    if (!cookies.username) {
+      navigate("/login", { replace: true });
+    }
+  }, [cookies.username, navigate]);
 
   useEffect(() => {
     fetch(`https://campus-dashboard.onrender.com/tests/${testId}`)
@@ -22,7 +24,7 @@ export function Exampage() {
       .then(data => setQuestions(data.questionset || []));
   }, [testId]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     let sc = 0;
 
     questions.forEach((q, i) => {
@@ -47,10 +49,31 @@ export function Exampage() {
 
     setScore(sc);
     setSubmitted(true);
+
+    // ===== ADDITION: UPDATE SCORE IN DATABASE =====
+    try {
+      await fetch("https://campus-dashboard.onrender.com/update-points", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: cookies.username,
+          points: sc
+        })
+      });
+    } catch (err) {
+      console.error("Score update failed", err);
+    }
   };
-  const handleBackButton  =() => {
-    navigate ("/home")
-  }
+
+  const handleBackButton = () => {
+    if (submitted) {
+      navigate("/home", { replace: true });
+    } else {
+      navigate(-1);
+    }
+  };
 
   return (
     <>
@@ -124,7 +147,7 @@ export function Exampage() {
           background: #1673ff;
           color: white;
           border: none;
-           border-radius :10px ; 
+          border-radius: 10px;
           padding: 10px 26px;
           font-weight: bold;
           cursor: pointer;
@@ -133,7 +156,7 @@ export function Exampage() {
         .back-btn {
           background: #220c58fe;
           color: white;
-          border-radius :5px ; 
+          border-radius: 5px;
           border: none;
           padding: 10px 26px;
           font-weight: bold;
@@ -165,7 +188,6 @@ export function Exampage() {
                   Q{i + 1}. {q.q}
                 </div>
 
-                {/* ===== NAT ===== */}
                 {q.qtype === "nat" && (
                   <>
                     <input
@@ -185,7 +207,6 @@ export function Exampage() {
                   </>
                 )}
 
-                {/* ===== MCQ ===== */}
                 {q.qtype === "mcq" &&
                   q.options.map((opt, idx) => {
                     let cls = "option";
@@ -212,7 +233,6 @@ export function Exampage() {
                     );
                   })}
 
-                {/* ===== MSQ ===== */}
                 {q.qtype === "msq" &&
                   q.options.map((opt, idx) => {
                     const selected = userAns?.includes(idx);
@@ -254,13 +274,15 @@ export function Exampage() {
 
           <div className="exam-actions">
             <button
+              type="button"
               className="back-btn"
               onClick={handleBackButton}
-              disabled={submitted}
             >
               ⬅ Back
             </button>
+
             <button
+              type="button"
               className="submit-btn"
               onClick={handleSubmit}
               disabled={submitted}

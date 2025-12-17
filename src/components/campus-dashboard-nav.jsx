@@ -30,6 +30,7 @@ export function Nav() {
               </div>
               <div>
             <button
+            onClick={handleSignOut}
   className="btn"
   style={{ color: "#000000", fontWeight : "bold", backgroundColor: "#06caf5ff" }}
 >
