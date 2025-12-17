@@ -29,9 +29,14 @@ export function Nav() {
                 </Link>
               </div>
               <div>
-                <button className="btn btn-info text-white " onClick={handleSignOut} >
-                  <b>Sign Out</b>
-                </button>
+            <button
+  className="btn"
+  style={{ color: "#000000", fontWeight : "bold", backgroundColor: "#06caf5ff" }}
+>
+  Sign Out
+</button>
+
+
               </div>
             </div>
           </nav>
