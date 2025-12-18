@@ -31,7 +31,9 @@ export function Exampage() {
       const userAns = answers[i];
 
       if (q.qtype === "nat") {
-        if (userAns?.trim() === q.correct[0]) sc++;
+        const ua = userAns?.trim().toLowerCase();
+        const ca = q.correct[0].trim().toLowerCase();
+        if (ua === ca) sc++;
       }
 
       if (q.qtype === "mcq") {
@@ -50,7 +52,6 @@ export function Exampage() {
     setScore(sc);
     setSubmitted(true);
 
-    // ===== ADDITION: UPDATE SCORE IN DATABASE =====
     try {
       await fetch("https://campus-dashboard.onrender.com/update-points", {
         method: "POST",

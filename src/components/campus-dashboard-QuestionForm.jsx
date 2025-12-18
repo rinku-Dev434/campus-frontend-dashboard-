@@ -62,15 +62,41 @@ export function QuestionForm() {
   };
 
   const handleSubmitExam = async () => {
-    if (!examData.id || !examData.title || questions.length === 0) return;
+  if (!examData.id || !examData.title || questions.length === 0) return;
 
-    await axios.post("https://campus-dashboard.onrender.com/questionform", {
-      ...examData,
-      questionset: questions
-    });
+  const payload = {
+    ...examData,
+    id: examData.id,
+    title: examData.title.toLowerCase().trim(),
+    company: examData.company.toLowerCase().trim(),
+    description: examData.description.toLowerCase().trim(),
+    numberofquestions: examData.numberofquestions,
+    questionset: questions.map(q => {
+      if (q.qtype === "nat") {
+        return {
+          q: q.q.toLowerCase().trim(),
+          qtype: "nat",
+          correct: q.correct.map(ans => ans.trim())
+        };
+      }
 
-    navigate("/home");
+      return {
+        q: q.q.toLowerCase().trim(),
+        qtype: q.qtype.toLowerCase(),
+        options: q.options.map(opt => opt.toLowerCase().trim()),
+        correct: q.correct
+      };
+    })
   };
+
+  await axios.post(
+    "https://campus-dashboard.onrender.com/questionform",
+    payload
+  );
+
+  navigate("/home");
+};
+
 
   return (
     <>
